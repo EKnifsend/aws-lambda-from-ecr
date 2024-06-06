@@ -31,7 +31,7 @@ Resources:
     Properties:
       Code:
         ImageUri:
-          Fn::Sub: <your-aws-account>.dkr.ecr.<your-region>.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-<your-aws-account>-<your-region>:c10e836856f3dcb40096deb8c43c17a16c5967672f2a6411b3fdfba7ecc89fd1
+          Fn::Sub: <account-id>.dkr.ecr.<your-region>.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-<account-id>-<region>:c10e836856f3dcb40096deb8c43c17a16c5967672f2a6411b3fdfba7ecc89fd1
       FunctionName: my-lambda-function
       MemorySize: 384
       PackageType: Image

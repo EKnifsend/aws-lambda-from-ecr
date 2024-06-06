@@ -3,5 +3,5 @@ import json
 
 def lambda_handler(event, context):
     # TODO implement
-    message = "Hello from Lambda using the aws CDK via DockerImageCode!"
+    message = "Hello from lambda using an ecr image!"
     return {"statusCode": 200, "body": json.dumps(message)}

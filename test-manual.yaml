@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template to create IAM Role, ECR repository, and Lambda Function from Docker image
 
 Resources:
-  EthanCfnRole:
+  MyCfnRole:
     Type: 'AWS::IAM::Role'
     Properties: 
       AssumeRolePolicyDocument:
@@ -13,7 +13,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: EthanCfnPolicy
+        - PolicyName: MyCfnPolicy
           PolicyDocument: 
             Version: "2012-10-17"
             Statement:
@@ -26,20 +26,20 @@ Resources:
   #   Properties:
   #     RepositoryName: ethan-cfn-test
 
-  EthanCfnFunction:
+  MyCfnFunction:
     Type: 'AWS::Lambda::Function'
     DependsOn: 
-     - EthanCfnRole
+     - MyCfnRole
     Properties:
-      FunctionName: ethan-cfn-function
-      Role: !GetAtt EthanCfnRole.Arn
+      FunctionName: <your-lambda-function>
+      Role: !GetAtt MyCfnRole.Arn
       PackageType: Image
       Code:
-        ImageUri: !Sub "<your-aws-account>.dkr.ecr.<your-region>.amazonaws.com/ethan-cfn-test:ethan-cfn-image"
+        ImageUri: !Sub "<account-id>.dkr.ecr.<region>.amazonaws.com/<your-ecr-repo>:<image-name>"
       MemorySize: 384
       Timeout: 900
     Metadata:
-      aws:asset:path: asset.ethan-cfn-image
+      aws:asset:path: asset.<image-name>
       aws:asset:dockerfile-path: Dockerfile
       aws:asset:property: Code.ImageUri
     

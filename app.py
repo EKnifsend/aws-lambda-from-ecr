@@ -18,7 +18,7 @@ AwsCdkTestStack(
     # env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
     # Uncomment the next line if you know exactly what Account and Region you
     # want to deploy the stack to. */
-    env=cdk.Environment(account="<your-aws-account>", region="<your-region>"),
+    env=cdk.Environment(account="<account-id>", region="<region>"),
     # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
 )
 

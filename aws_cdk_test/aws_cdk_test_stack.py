@@ -20,8 +20,8 @@ class AwsCdkTestStack(Stack):
 
         # The code that defines your stack goes here
 
-        account_id = "<your-aws-account>"
-        region = "<your-region>"
+        account_id = "<account-id>"
+        region = "<region>"
 
         # 1. Create ECR repository
         # ecr_repository = aws_ecr.Repository(
@@ -116,7 +116,7 @@ class AwsCdkTestStack(Stack):
         lambda_function = aws_lambda.DockerImageFunction(
             self,
             "MyLambdaFunction",
-            function_name="my-lambda-function",
+            function_name="<your-lambda-function>",
             code=aws_lambda.DockerImageCode.from_image_asset(
                 "./", platform=aws_ecr_assets.Platform.LINUX_AMD64
             ),
