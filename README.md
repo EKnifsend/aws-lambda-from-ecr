@@ -23,55 +23,49 @@ Here is an overview of some useful files in the repository:
  ## Using cloudformation without the CDK
 Unlike the CDK, we will need to manually create, tag, and upload a docker image to ecr. 
 
-First, build a docker image using the Dockerfile included. replace <image-name> with whatever you wish to decide to name your image. I named mine "ethan-test-image". If you use an arm-based mac and wish to test your image locally, replace the platform with "linux/arm64". However, for your image to run in aws, it must be built for x86 as specified below ("linux/amd64")
-
+1. First, build a docker image using the Dockerfile included. replace <image-name> with whatever you wish to decide to name your image. I named mine "ethan-test-image". If you use an arm-based mac and wish to test your image locally, replace the platform with "linux/arm64". However, for your image to run in aws, it must be built for x86 as specified below ("linux/amd64")
 ```
 $ docker build --platform linux/amd64 -t <image-name> .
 ```
-Then we will create an ecr repository. You can do this with a separate cloudformation template, but for ease we will just do it in terminal. Replace <your-ecr-repo> with whatever you wish to name the ecr repository that will store your image.
 
+2. Then we will create an ecr repository. You can do this with a separate cloudformation template, but for ease we will just do it in terminal. Replace <your-ecr-repo> with whatever you wish to name the ecr repository that will store your image.
 ```
 $ aws ecr create-repository --repository-name <your-ecr-repo>
 ```
 
-Connect ecr and Docker. Replace <account-id> and <region> with your aws account id (viewable in console) and region (whatever you chose). 
-
+3. Connect ecr and Docker. Replace <account-id> and <region> with your aws account id (viewable in console) and region (whatever you chose).
 ```
 $ aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<region>.amazonaws.com
 ```
 
 If the command above does not work, particularly if your error is "Cannot perform an interactive login from a non TTY device", try the following command (specified in this link: "https://stackoverflow.com/questions/60583847/aws-ecr-saying-cannot-perform-an-interactive-login-from-a-non-tty-device-after"). Remember to replace the <>'s
-
 ```
 $ docker login -u AWS -p $(aws ecr get-login-password --region <region>) <account-id>.dkr.ecr.<region>.amazonaws.com
 ```
 
-Tag your docker image. you should see a new image created in your local Docker desktop app.
-
+4. Tag your docker image. you should see a new image created in your local Docker desktop app.
 ```
 $ docker tag <image-name>:latest <account-id>.dkr.ecr.<region>.amazonaws.com/<your-ecr-repo>:<image-name>
 ```
 
-Push your image to ecr. 
-
+5. Push your image to ecr. 
 ```
 $ docker push <account-id>.dkr.ecr.<region>.amazonaws.com/<your-ecr-repo>:<image-name>
 ```
 
-If you go to AWS console, and go to Elastic Container Registry, you should be able to see a repository called <your-ecr-repo> with an image tagged <image-name>. Now, we will deploy the cloudformation template to create the lambda function. Go into test-manual.yaml and replace all the <>'s. Replace <your-lambda-function> with whatever you wish to name your lambda function. Then, run this command. Replace <your-cfn-stack> with whatever you wish to name your cloudformation stack. 
-
+6. If you go to AWS console, and go to Elastic Container Registry, you should be able to see a repository called <your-ecr-repo> with an image tagged <image-name>. Now, we will deploy the cloudformation template to create the lambda function. Go into test-manual.yaml and replace all the <>'s. Replace <your-lambda-function> with whatever you wish to name your lambda function. Then, run this command. Replace <your-cfn-stack> with whatever you wish to name your cloudformation stack. 
 ```
 $ aws cloudformation create-stack --stack-name <your-cfn-stack> --template-body file://test-manual.yaml --capabilities CAPABILITY_IAM
 ```
 
-If you go to aws console and go to cloudformation, you should see your stack attempt to create. When it is done, you should see your lambda function with whatever you named it, and it should test successfully. If your stack has any issues creating, you should be able to see what under "Events". Be aware, if you wish to recreate your stack, you will need to delete your current stack, even if there was an error creating.
+If you go to AWS console and go to cloudformation, you should see your stack attempt to create. When it is done, you should see your lambda function with whatever you named it, and it should test successfully. If your stack has any issues creating, you should be able to see what under "Events". Be aware, if you wish to recreate your stack, you will need to delete your current stack, even if there was an error creating.
 
 ## Using CDK
-Install and configure the AWS CDK CLI. The instructions for this are in the link: https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_install. The configuration for the CDK is done with the command 'cdk bootstrap' as specified in the documentation. It only needs to be done once. 
+1. Install and configure the AWS CDK CLI. The instructions for this are in the link: https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_install. The configuration for the CDK is done with the command 'cdk bootstrap' as specified in the documentation. It only needs to be done once. 
 
-Set up a python environment to run the CDK script. The instructions to do so are specfied in README.CDK.md. 
+2. Set up a python environment to run the CDK script. The instructions to do so are specfied in README.CDK.md. 
 
-Replace the <>'s in app.py and aws_cdk_test/aws_cdk_test_stack.py. 
+3. Replace the <>'s in app.py and aws_cdk_test/aws_cdk_test_stack.py. 
 
 Now simply run
 ```
@@ -79,4 +73,4 @@ $ cdk synth
 $ cdk deploy
 ```
 
-This should create an ecr image in the cdk repository generated by CDK when you ran 'cdk bootstrap', an IAM role called "lambda-basic-role", and create a lambda function called <your-lambda-function> deployed via the ecr image. Unfortunately, through this method, you cannot specify the image tag nor the repository to which the image is sent to. Also be aware a new image is created an pushed to ecr each time you deploy your CDK script. To learn more about AWS CDk, I found this video to be a helpful guide in starting a CDK script: "https://www.youtube.com/watch?v=Vjkac2gfKuo&list=LL&index=10". 
+This should create an ecr image in the CDK repository generated by CDK when you ran 'cdk bootstrap', an IAM role called "lambda-basic-role", and create a lambda function called <your-lambda-function> deployed via the ecr image. Unfortunately, through this method, you cannot specify the image tag nor the repository to which the image is pushed to. Also be aware a new image is created an pushed to ecr each time you deploy your CDK script. To learn more about AWS CDK, I found this video to be a helpful guide in starting a CDK script: "https://www.youtube.com/watch?v=Vjkac2gfKuo&list=LL&index=10". 
